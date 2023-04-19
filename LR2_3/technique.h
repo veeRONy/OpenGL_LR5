@@ -26,12 +26,15 @@ protected:
 
     GLint GetProgramParam(GLint param);
 
-private:
-
     GLuint m_shaderProg;
+
+private:
 
     typedef std::list<GLuint> ShaderObjList;
     ShaderObjList m_shaderObjList;
 };
+
+#define INVALID_UNIFORM_LOCATION 0xFFFFFFFF
+
 
 #endif	/* TECHNIQUE_H */

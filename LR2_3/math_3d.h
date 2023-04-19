@@ -4,10 +4,11 @@
 #include <stdio.h>
 #include <math.h>
 
-
 #define M_PI 3.14
 #define ToRadian(x) ((x) * M_PI / 180.0f)
 #define ToDegree(x) ((x) * 180.0f / M_PI)
+
+float RandomFloat();
 
 struct Vector2i
 {
@@ -84,10 +85,35 @@ struct Vector3f
 
     void Print() const
     {
-        printf("(%.02f, %.02f, %.02f", x, y, z);
+        printf("(%.02f, %.02f, %.02f)", x, y, z);
     }
 };
 
+
+struct Vector4f
+{
+    float x;
+    float y;
+    float z;
+    float w;
+
+    Vector4f()
+    {
+    }
+
+    Vector4f(float _x, float _y, float _z, float _w)
+    {
+        x = _x;
+        y = _y;
+        z = _z;
+        w = _w;
+    }
+
+    void Print() const
+    {
+        printf("(%.02f, %.02f, %.02f, %.02f)", x, y, z, w);
+    }
+};
 
 inline Vector3f operator+(const Vector3f& l, const Vector3f& r)
 {
@@ -157,6 +183,18 @@ public:
         }
 
         return Ret;
+    }
+
+    Vector4f operator*(const Vector4f& v) const
+    {
+        Vector4f r;
+
+        r.x = m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z + m[0][3] * v.w;
+        r.y = m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z + m[1][3] * v.w;
+        r.z = m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z + m[2][3] * v.w;
+        r.w = m[3][0] * v.x + m[3][1] * v.y + m[3][2] * v.z + m[3][3] * v.w;
+
+        return r;
     }
 
     void Print()
