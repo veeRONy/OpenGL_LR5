@@ -27,6 +27,11 @@ public:
         m_worldPos.z = z;
     }
 
+    void WorldPos(const Vector3f& Pos)
+    {
+        m_worldPos = Pos;
+    }
+
     void Rotate(float RotateX, float RotateY, float RotateZ)
     {
         m_rotateInfo.x = RotateX;

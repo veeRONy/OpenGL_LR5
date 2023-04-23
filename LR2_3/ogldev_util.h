@@ -27,9 +27,17 @@ void WriteBinaryFile(const char* pFilename, const void* pData, int size);
 void OgldevError(const char* pFileName, uint line, const char* msg, ... );
 void OgldevFileError(const char* pFileName, uint line, const char* pFileError);
 
-#define COLOR_TEXTURE_UNIT GL_TEXTURE0
-#define SHADOW_TEXTURE_UNIT GL_TEXTURE1
-#define NORMAL_TEXTURE_UNIT GL_TEXTURE2
+
+#define COLOR_TEXTURE_UNIT              GL_TEXTURE0
+#define COLOR_TEXTURE_UNIT_INDEX        0
+#define SHADOW_TEXTURE_UNIT             GL_TEXTURE1
+#define SHADOW_TEXTURE_UNIT_INDEX       1
+#define NORMAL_TEXTURE_UNIT             GL_TEXTURE2
+#define NORMAL_TEXTURE_UNIT_INDEX       2
+#define RANDOM_TEXTURE_UNIT             GL_TEXTURE3
+#define RANDOM_TEXTURE_UNIT_INDEX       3
+#define DISPLACEMENT_TEXTURE_UNIT       GL_TEXTURE4
+#define DISPLACEMENT_TEXTURE_UNIT_INDEX 4
 
 #define OGLDEV_ERROR0(msg) OgldevError(__FILE__, __LINE__, msg)
 #define OGLDEV_ERROR(msg, ...) OgldevError(__FILE__, __LINE__, msg, __VA_ARGS__)
@@ -63,7 +71,7 @@ void OgldevFileError(const char* pFileName, uint line, const char* pFileError);
 
 #define SAFE_DELETE(p) if (p) { delete p; p = NULL; }
 
-#define GLExitIfError                                                          \
+#define GLExitIfError()                                                          \
 {                                                                               \
     GLenum Error = glGetError();                                                \
                                                                                 \

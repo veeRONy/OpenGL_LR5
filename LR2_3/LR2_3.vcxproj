@@ -75,7 +75,7 @@
     <ReferencePath>C:\Program Files\ImageMagick-7.1.1-Q16-HDRI\lib;$(ReferencePath)</ReferencePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Program Files\ImageMagick-7.1.1-Q8\include\MagickWand;C:\Program Files\ImageMagick-7.1.1-Q8\include\MagickCore;C:\Program Files\ImageMagick-7.1.1-Q8\include\Magick++;C:\Program Files\ImageMagick-7.1.1-Q8\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Program Files\ImageMagick-7.1.1-Q8\include\MagickWand;C:\Users\user\Desktop\Учеба\С++ программы\ИКГ\Open_GL_LR5(32-33)\LR_3\LR2_3;C:\Program Files\ImageMagick-7.1.1-Q8\include\MagickCore;C:\Program Files\ImageMagick-7.1.1-Q8\include\Magick++;C:\Program Files\ImageMagick-7.1.1-Q8\include;$(IncludePath)</IncludePath>
     <ReferencePath>C:\Program Files\ImageMagick-7.1.1-Q8\lib;$(ReferencePath)</ReferencePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -129,7 +129,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Program Files\ImageMagick-7.1.1-Q8\include\MagickWand;C:\Program Files\ImageMagick-7.1.1-Q8\include\MagickCore;C:\Program Files\ImageMagick-7.1.1-Q8\include\Magick++;C:\Program Files\ImageMagick-7.1.1-Q8\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\user\Desktop\freetype-gl-master\VisualC\freetype-gl;C:\Users\user\Desktop\Учеба\С++ программы\ИКГ\Open_GL_LR5(32-33)\LR_3\LR2_3;C:\Program Files\ImageMagick-7.1.1-Q8\include\MagickWand;C:\Program Files\ImageMagick-7.1.1-Q8\include\MagickCore;C:\Program Files\ImageMagick-7.1.1-Q8\include\Magick++;C:\Program Files\ImageMagick-7.1.1-Q8\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -151,11 +151,10 @@
     <ClCompile Include="math_3d.cpp" />
     <ClCompile Include="mesh.cpp" />
     <ClCompile Include="ogldev_util.cpp" />
+    <ClCompile Include="particle_system.cpp" />
     <ClCompile Include="pipeline.cpp" />
-    <ClCompile Include="shadow_map_fbo.cpp" />
-    <ClCompile Include="shadow_map_technique.cpp" />
-    <ClCompile Include="skybox.cpp" />
-    <ClCompile Include="skybox_technique.cpp" />
+    <ClCompile Include="ps_update_technique.cpp" />
+    <ClCompile Include="random_texture.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="technique.cpp" />
@@ -177,12 +176,12 @@
     <ClInclude Include="math_3d.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="ogldev_types.h" />
+    <ClInclude Include="ogldev_util.h" />
+    <ClInclude Include="particle_system.h" />
     <ClInclude Include="pipeline.h" />
+    <ClInclude Include="ps_update_technique.h" />
+    <ClInclude Include="random_texture.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="shadow_map_fbo.h" />
-    <ClInclude Include="shadow_map_technique.h" />
-    <ClInclude Include="skybox.h" />
-    <ClInclude Include="skybox_technique.h" />
     <ClInclude Include="technique.h" />
     <ClInclude Include="texture.h" />
   </ItemGroup>

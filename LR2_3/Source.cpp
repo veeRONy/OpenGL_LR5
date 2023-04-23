@@ -1,41 +1,40 @@
-﻿#include <stdio.h>
-#include <string.h>
-#include <assert.h>
-#include <math.h>
+﻿#include <math.h>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 
-#include "math_3d.h"
+#include "ogldev_util.h"
 #include "pipeline.h"
-#include "Camera.h"
+#include "camera.h"
 #include "texture.h"
 #include "lighting_technique.h"
 #include "glut_backend.h"
-#include "ogldev_util.h"
 #include "mesh.h"
-#include "Magick++.h"
-#include "billboard_list.h"
+#ifdef FREETYPE
+#include "freetypeGL.h"
+#endif
 
-#define WINDOW_WIDTH 1280
+#define WINDOW_WIDTH  1280  
 #define WINDOW_HEIGHT 1024
 
+#define NUM_ROWS 50
+#define NUM_COLS 20
+#define NUM_INSTANCES NUM_ROWS * NUM_COLS
 
-class Main : public ICallbacks
+
+class Tutorial33 : public ICallbacks
 {
 public:
 
-    Main()
+    Tutorial33()
     {
-        m_pLightingTechnique = NULL;
         m_pGameCamera = NULL;
-        m_pGround = NULL;
-        m_pTexture = NULL;
-        m_pNormalMap = NULL;
-
-        m_dirLight.AmbientIntensity = 0.2f;
-        m_dirLight.DiffuseIntensity = 0.8f;
-        m_dirLight.Color = Vector3f(1.0f, 1.0f, 1.0f);
-        m_dirLight.Direction = Vector3f(1.0f, 0.0f, 0.0f);
+        m_pEffect = NULL;
+        m_scale = 0.0f;
+        m_pGroundTex = NULL;
+        m_directionalLight.Color = Vector3f(1.0f, 1.0f, 1.0f);
+        m_directionalLight.AmbientIntensity = 0.9f;
+        m_directionalLight.DiffuseIntensity = 0.9f;
+        m_directionalLight.Direction = Vector3f(1.0f, 0.0, 0.0);
 
         m_persProjInfo.FOV = 60.0f;
         m_persProjInfo.Height = WINDOW_HEIGHT;
@@ -43,99 +42,109 @@ public:
         m_persProjInfo.zNear = 1.0f;
         m_persProjInfo.zFar = 100.0f;
 
+        m_pMesh = NULL;
+        m_frameCount = 0;
+        m_fps = 0.0f;
     }
 
-    ~Main()
+    ~Tutorial33()
     {
-        SAFE_DELETE(m_pLightingTechnique);
+        SAFE_DELETE(m_pEffect);
         SAFE_DELETE(m_pGameCamera);
-        SAFE_DELETE(m_pGround);
-        SAFE_DELETE(m_pTexture);
-        SAFE_DELETE(m_pNormalMap);
+        SAFE_DELETE(m_pMesh);
     }
 
     bool Init()
     {
-        // параметры камеры
-        Vector3f Pos(0.5f, 2.0f, 0.25f);
-        Vector3f Target(0.0f, -0.5f, 1.0f);
+        Vector3f Pos(7.0f, 3.0f, 0.0f);
+        Vector3f Target(0.0f, -0.2f, 1.0f);
         Vector3f Up(0.0, 1.0f, 0.0f);
 
         m_pGameCamera = new Camera(WINDOW_WIDTH, WINDOW_HEIGHT, Pos, Target, Up);
 
-        // инициализируем эффект освещения
-        m_pLightingTechnique = new LightingTechnique();
+        m_pEffect = new LightingTechnique();
 
-        if (!m_pLightingTechnique->Init()) {
+        if (!m_pEffect->Init()) {
             printf("Error initializing the lighting technique\n");
             return false;
         }
 
-        m_pLightingTechnique->Enable();
-        m_pLightingTechnique->SetDirectionalLight(m_dirLight);
-        m_pLightingTechnique->SetColorTextureUnit(0);
-        m_pLightingTechnique->SetNormalMapTextureUnit(2);
+        m_pEffect->Enable();
 
-        // создаем меш
-        m_pGround = new Mesh();
+        m_pEffect->SetColorTextureUnit(COLOR_TEXTURE_UNIT_INDEX);
+        m_pEffect->SetDirectionalLight(m_directionalLight);
+        m_pEffect->SetMatSpecularIntensity(0.0f);
+        m_pEffect->SetMatSpecularPower(0);
+        m_pEffect->SetColor(0, Vector4f(1.0f, 0.3f, 0.2f, 0.0f));
+        m_pEffect->SetColor(1, Vector4f(0.5f, 1.0f, 1.0f, 0.0f));
+        m_pEffect->SetColor(2, Vector4f(1.0f, 0.5f, 1.0f, 0.0f));
+        m_pEffect->SetColor(3, Vector4f(1.0f, 1.0f, 1.0f, 0.0f));
 
-        if (!m_pGround->LoadMesh("C:/Users/user/Desktop/Учеба/С++ программы/ИКГ/Open_GL_LR5/LR_3/LR2_3/quad.obj")) {
+        
+
+        m_pMesh = new Mesh();
+
+        if (!m_pMesh->LoadMesh("C:/Users/user/Desktop/Учеба/С++ программы/ИКГ/Open_GL_LR5(32-33)/LR_3/LR2_3/spider.obj")) {
             return false;
         }
 
-        if (!m_billboardList.Init("C:/Users/user/Desktop/Учеба/С++ программы/ИКГ/Open_GL_LR5/LR_3/LR2_3/rose.png")) {
+#ifdef FREETYPE
+        if (!m_fontRenderer.InitFontRenderer()) {
             return false;
         }
+#endif
 
-         //загружем текстуру
-        m_pTexture = new Texture(GL_TEXTURE_2D, "C:/Users/user/Desktop/Учеба/С++ программы/ИКГ/Open_GL_LR5/LR_3/LR2_3/grass.jpg");
+        m_time = glutGet(GLUT_ELAPSED_TIME);
 
-        if (!m_pTexture->Load()) {
-            return false;
-        }
-
-         //привязываем текстуру к m_pTexture
-        m_pTexture->Bind(COLOR_TEXTURE_UNIT);
-
-        // загружаем карту нормалей
-        m_pNormalMap = new Texture(GL_TEXTURE_2D, "C:/Users/user/Desktop/Учеба/С++ программы/ИКГ/Open_GL_LR5/LR_3/LR2_3/normal_map.jpg");
-
-        if (!m_pNormalMap->Load()) {
-            return false;
-        }
+        CalcPositions();
 
         return true;
     }
-
 
     void Run()
     {
         GLUTBackendRun(this);
     }
 
+
     virtual void RenderSceneCB()
     {
+        CalcFPS();
+
+        m_scale += 0.005f;
+
         m_pGameCamera->OnRender();
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        m_pLightingTechnique->Enable();
+        m_pEffect->Enable();
+        m_pEffect->SetEyeWorldPos(m_pGameCamera->GetPos());
 
-        // пайплайн
         Pipeline p;
-        p.Scale(20.0f, 20.0f, 1.0f);
-        p.Rotate(90.0f, 0.0, 0.0f);
-        // устанавливаем камеру
         p.SetCamera(m_pGameCamera->GetPos(), m_pGameCamera->GetTarget(), m_pGameCamera->GetUp());
         p.SetPerspectiveProj(m_persProjInfo);
+        p.Rotate(0.0f, 90.0f, 0.0f);
+        p.Scale(0.005f, 0.005f, 0.005f);
 
-        m_pTexture->Bind(COLOR_TEXTURE_UNIT);
+       
+       
+        
 
-        m_pLightingTechnique->SetWVP(p.GetWVPTrans());
-        m_pLightingTechnique->SetWorldMatrix(p.GetWorldTrans());
-        m_pGround->Render();
+        Matrix4f WVPMatrics[NUM_INSTANCES];
+        Matrix4f WorldMatrices[NUM_INSTANCES];
 
-        m_billboardList.Render(p.GetVPTrans(), m_pGameCamera->GetPos());
-        // меняем фоновый буфер и буфер кадра местами
+        for (unsigned int i = 0; i < NUM_INSTANCES; i++) {
+            Vector3f Pos(m_positions[i]);
+            Pos.y += sinf(m_scale) * m_velocity[i];
+            p.WorldPos(Pos);
+            WVPMatrics[i] = p.GetWVPTrans().Transpose();
+            WorldMatrices[i] = p.GetWorldTrans().Transpose();
+        }
+
+        m_pMesh->Render(NUM_INSTANCES, WVPMatrics, WorldMatrices);
+
+        RenderFPS();
+
         glutSwapBuffers();
     }
 
@@ -152,7 +161,6 @@ public:
 
     virtual void KeyboardCB(unsigned char Key, int x, int y)
     {
-        // выбор клавиш
         switch (Key) {
         case 'q':
             glutLeaveMainLoop();
@@ -160,44 +168,95 @@ public:
         }
     }
 
+
     virtual void PassiveMouseCB(int x, int y)
     {
         m_pGameCamera->OnMouse(x, y);
     }
 
+
+    virtual void MouseCB(int Button, int State, int x, int y)
+    {
+    }
+
+
 private:
 
-    LightingTechnique* m_pLightingTechnique;
+    void CalcFPS()
+    {
+        m_frameCount++;
+
+        int time = glutGet(GLUT_ELAPSED_TIME);
+
+        if (time - m_time > 1000) {
+            m_fps = (float)m_frameCount * 1000.0f / (time - m_time);
+            m_time = time;
+            m_frameCount = 0;
+        }
+    }
+
+
+    void RenderFPS()
+    {
+        char text[32];
+        SNPRINTF(text, sizeof(text), "FPS: %.2f", m_fps);
+#ifdef FREETYPE
+        m_fontRenderer.RenderText(10, 10, text);
+#endif
+    }
+
+
+    void CalcPositions()
+    {
+        for (unsigned int i = 0; i < NUM_ROWS; i++) {
+            for (unsigned int j = 0; j < NUM_COLS; j++) {
+                unsigned int Index = i * NUM_COLS + j;
+                m_positions[Index].x = (float)j;
+                m_positions[Index].y = RandomFloat() * 10.0f;
+                m_positions[Index].z = (float)i;
+                m_velocity[Index] = RandomFloat();
+                if (i & 1) {
+                    m_velocity[Index] *= (-1.0f);
+                }
+            }
+        }
+    }
+
+    LightingTechnique* m_pEffect;
     Camera* m_pGameCamera;
-    DirectionalLight m_dirLight;
-    Mesh* m_pGround;
-    Texture* m_pTexture;
-    Texture* m_pNormalMap;
+    float m_scale;
+    DirectionalLight m_directionalLight;
+    Mesh* m_pMesh;
     PersProjInfo m_persProjInfo;
-    BillboardList m_billboardList;
+    Texture* m_pGroundTex;
+#ifdef FREETYPE
+    FontRenderer m_fontRenderer;
+#endif
+    int m_time;
+    int m_frameCount;
+    float m_fps;
+    Vector3f m_positions[NUM_INSTANCES];
+    float m_velocity[NUM_INSTANCES];
 };
+
 
 int main(int argc, char** argv)
 {
-    // инициализация
-    GLUTBackendInit(argc, argv);
-    
-    // инициализация Magick
     Magick::InitializeMagick(*argv);
+    GLUTBackendInit(argc, argv);
 
-    // создаем окно
-    if (!GLUTBackendCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, 144, true, "OpenGL")) {
+    if (!GLUTBackendCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, 144, true, "Tutorial 33")) {
         return 1;
     }
 
-    Main* pApp = new Main();
+    SRANDOM;
 
+    Tutorial33* pApp = new Tutorial33();
 
     if (!pApp->Init()) {
         return 1;
     }
 
-    // основной цикл
     pApp->Run();
 
     delete pApp;

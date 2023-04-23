@@ -48,25 +48,22 @@
     <ClCompile Include="mesh.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="shadow_map_fbo.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="shadow_map_technique.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="cubemap_texture.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="skybox_technique.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="skybox.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="billboard_technique.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="billboard_list.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="ps_update_technique.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="random_texture.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="particle_system.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
@@ -113,25 +110,25 @@
     <ClInclude Include="mesh.h">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="shadow_map_fbo.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="shadow_map_technique.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="cubemap_texture.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="skybox_technique.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="skybox.h">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
     <ClInclude Include="billboard_list.h">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
     <ClInclude Include="billboard_technique.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="particle_system.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="ps_update_technique.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="random_texture.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="ogldev_util.h">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,8 +1,8 @@
 #include <GL/freeglut.h>
 
-#include "camera.h"
+#include "Camera.h"
 
-const static float STEP_SCALE = 0.4f;
+const static float STEP_SCALE = 0.1f;
 const static int MARGIN = 10;
 
 Camera::Camera(int WindowWidth, int WindowHeight)
@@ -64,6 +64,10 @@ void Camera::Init()
 
     m_AngleV = -ToDegree(asin(m_target.y));
 
+    m_OnUpperEdge = false;
+    m_OnLowerEdge = false;
+    m_OnLeftEdge = false;
+    m_OnRightEdge = false;
     m_mousePos.x = m_windowWidth / 2;
     m_mousePos.y = m_windowHeight / 2;
 
@@ -110,16 +114,6 @@ bool Camera::OnKeyboard(int Key)
         Ret = true;
     }
     break;
-    case GLUT_KEY_END:
-    {
-        m_pos.y -= STEP_SCALE;
-        Ret = true;
-    } break;
-    case GLUT_KEY_HOME:
-    {
-        m_pos.y += STEP_SCALE;
-        Ret = true;
-    } break;
     }
 
     return Ret;
@@ -128,22 +122,72 @@ bool Camera::OnKeyboard(int Key)
 
 void Camera::OnMouse(int x, int y)
 {
-    if ((x == m_mousePos.x) && (y == m_mousePos.y)) return;
-
     const int DeltaX = x - m_mousePos.x;
     const int DeltaY = y - m_mousePos.y;
+
+    m_mousePos.x = x;
+    m_mousePos.y = y;
 
     m_AngleH += (float)DeltaX / 20.0f;
     m_AngleV += (float)DeltaY / 20.0f;
 
+    if (DeltaX == 0) {
+        if (x <= MARGIN) {
+            //    m_AngleH -= 1.0f;
+            m_OnLeftEdge = true;
+        }
+        else if (x >= (m_windowWidth - MARGIN)) {
+            //    m_AngleH += 1.0f;
+            m_OnRightEdge = true;
+        }
+    }
+    else {
+        m_OnLeftEdge = false;
+        m_OnRightEdge = false;
+    }
+
+    if (DeltaY == 0) {
+        if (y <= MARGIN) {
+            m_OnUpperEdge = true;
+        }
+        else if (y >= (m_windowHeight - MARGIN)) {
+            m_OnLowerEdge = true;
+        }
+    }
+    else {
+        m_OnUpperEdge = false;
+        m_OnLowerEdge = false;
+    }
+
     Update();
-    glutWarpPointer(m_mousePos.x, m_mousePos.y);
 }
 
 
 void Camera::OnRender()
 {
     bool ShouldUpdate = false;
+
+    if (m_OnLeftEdge) {
+        m_AngleH -= 0.1f;
+        ShouldUpdate = true;
+    }
+    else if (m_OnRightEdge) {
+        m_AngleH += 0.1f;
+        ShouldUpdate = true;
+    }
+
+    if (m_OnUpperEdge) {
+        if (m_AngleV > -90.0f) {
+            m_AngleV -= 0.1f;
+            ShouldUpdate = true;
+        }
+    }
+    else if (m_OnLowerEdge) {
+        if (m_AngleV < 90.0f) {
+            m_AngleV += 0.1f;
+            ShouldUpdate = true;
+        }
+    }
 
     if (ShouldUpdate) {
         Update();

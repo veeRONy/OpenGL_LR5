@@ -1,8 +1,8 @@
-//#include <unistd.h>
 #include <stdio.h>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 
+#include "ogldev_util.h"
 #include "glut_backend.h"
 
 // Points to the object implementing the ICallbacks interface which was delivered to
@@ -39,6 +39,12 @@ static void IdleCB()
 }
 
 
+static void MouseCB(int Button, int State, int x, int y)
+{
+    s_pCallbacks->MouseCB(Button, State, x, y);
+}
+
+
 static void InitCallbacks()
 {
     glutDisplayFunc(RenderSceneCB);
@@ -46,6 +52,7 @@ static void InitCallbacks()
     glutSpecialFunc(SpecialKeyboardCB);
     glutPassiveMotionFunc(PassiveMouseCB);
     glutKeyboardFunc(KeyboardCB);
+    glutMouseFunc(MouseCB);
 }
 
 
@@ -61,7 +68,7 @@ bool GLUTBackendCreateWindow(unsigned int Width, unsigned int Height, unsigned i
 {
     if (isFullScreen) {
         char ModeString[64] = { 0 };
-        snprintf(ModeString, sizeof(ModeString), "%dx%d@%d", Width, Height, bpp);
+        SNPRINTF(ModeString, sizeof(ModeString), "%dx%d@%d", Width, Height, bpp);
         glutGameModeString(ModeString);
         glutEnterGameMode();
     }
